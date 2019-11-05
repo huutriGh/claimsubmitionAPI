@@ -10,7 +10,6 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import phl.claim.claimsubmition.models.Policy;
 import phl.claim.claimsubmition.models.PolicyDetail;
 import phl.claim.claimsubmition.services.PolicyService;
 
@@ -18,26 +17,6 @@ import phl.claim.claimsubmition.services.PolicyService;
 public class PolicyServiceImpl implements PolicyService {
     @Autowired
     private EntityManagerFactory entityManagerFactory;
-
-    @Override
-    public Policy getPolicy(String poNumber, String laIdNumber) {
-
-        /**
-         * select distinct p.* ,i.LIFE_IDNUM, pd.* from policy_info p inner join
-         * life_insured_info i on p.POLICY_NUMBER = i.CHDRNUM inner join product_details
-         * pd on i.CHDRNUM = pd.POLICY_NUMBER and i.LIFE_NUMBER = pd.LIFE_NUMBER where
-         * Pd.POLICY_NUMBER ='80049540' and p.LA_IDNUMBER ='190808115' and
-         * pd.POLICY_NUMBER not in (select pd.POLICY_NUMBER where pd.POLICY_NUMBER
-         * ='80049540' and pd.LIFE = '01' and pd.COVERAGE = '01' and pd.RIDER = '00')
-         */
-        Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
-        String sql = "from Policy P where P.policyNumber =:poNumber and P.laIdNumber=:laIdNumber";
-        Query<Policy> query = session.createQuery(sql, Policy.class);
-        query.setParameter("poNumber", poNumber);
-        query.setParameter("laIdNumber", laIdNumber);
-        return query.list().get(0);
-
-    }
 
     @Override
     public List<PolicyDetail> getPoObject(String poNumber, String laIdNumber) {
