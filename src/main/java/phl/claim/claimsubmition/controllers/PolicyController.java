@@ -25,7 +25,7 @@ public class PolicyController {
     public ResponseEntity<Object> findPolicy(@PathVariable("poNumber") String poNumber,
             @PathVariable("cardId") String cardId) {
 
-        List<PolicyDetail> policyDetail = policyService.getPoObject(poNumber, cardId);
+        List<PolicyDetail> policyDetail = policyService.getPolicyDetail(poNumber, cardId);
         if (policyDetail == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

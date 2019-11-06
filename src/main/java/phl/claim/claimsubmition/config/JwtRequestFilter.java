@@ -17,10 +17,10 @@ import io.jsonwebtoken.ExpiredJwtException;
 import phl.claim.claimsubmition.services.JWTUserDetailsService;
 
 /**
- * The JwtRequestFilter extends the Spring Web Filter OncePerRequestFilter class.
- * For any incoming request this Filter class gets executed. It checks if the
- * request has a valid JWT token. If it has a valid JWT Token then it sets the
- * Authentication in the context, to specify that the current user is
+ * The JwtRequestFilter extends the Spring Web Filter OncePerRequestFilter
+ * class. For any incoming request this Filter class gets executed. It checks if
+ * the request has a valid JWT token. If it has a valid JWT Token then it sets
+ * the Authentication in the context, to specify that the current user is
  * authenticated.
  */
 
@@ -53,10 +53,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
         // Once we get the token validate it.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
+
             // if token is valid configure Spring Security to manually set
             // authentication
-            if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
+            if (jwtTokenUtil.validateToken(jwtToken)) {
+                UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken
