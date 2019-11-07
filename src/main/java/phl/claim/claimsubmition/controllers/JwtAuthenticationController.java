@@ -1,6 +1,7 @@
 package phl.claim.claimsubmition.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -32,19 +33,20 @@ public class JwtAuthenticationController {
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
-        // String hashedPassword =
-        // passwordEncoder.encode(authenticationRequest.getIdNumber());
-        // String hashedUser =
-        // passwordEncoder.encode(authenticationRequest.getPolicyNumber());
 
-        authenticate(authenticationRequest.getPolicyNumber(), authenticationRequest.getIdNumber());
+        try {
+            authenticate(authenticationRequest.getPolicyNumber(), authenticationRequest.getIdNumber());
 
-        final UserDetails userDetails = userDetailsService.loadUser(authenticationRequest.getPolicyNumber(),
-                authenticationRequest.getIdNumber()); // userDetailsService.loadUserByUsername(authenticationRequest.getPolicyNumber());
+            final UserDetails userDetails = userDetailsService.loadUser(authenticationRequest.getPolicyNumber(),
+                    authenticationRequest.getIdNumber()); // userDetailsService.loadUserByUsername(authenticationRequest.getPolicyNumber());
 
-        final String token = jwtTokenUtil.generateToken(userDetails);
+            final String token = jwtTokenUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(new JwtResponse(token));
+            return ResponseEntity.ok(new JwtResponse(token));
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+
     }
 
     private void authenticate(String username, String password) throws Exception {

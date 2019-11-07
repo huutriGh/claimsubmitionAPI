@@ -24,22 +24,30 @@ public class NoteController {
     @RequestMapping(value = "/note", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getNote() {
 
-        List<Note> notes = noteService.getNote();
-        if (notes == null) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        try {
+            List<Note> notes = noteService.getNote();
+            if (notes == null) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(notes, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
-        return new ResponseEntity<>(notes, HttpStatus.OK);
 
     }
 
     @RequestMapping(value = "/componentfile", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getComponentfile() {
 
-        List<ComponentFile> notes = noteService.getComponentFile();
-        if (notes == null) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        try {
+            List<ComponentFile> notes = noteService.getComponentFile();
+            if (notes == null) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(notes, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
-        return new ResponseEntity<>(notes, HttpStatus.OK);
 
     }
 
