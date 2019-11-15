@@ -1,7 +1,7 @@
 package phl.claim.claimsubmition.models;
 
 import java.io.Serializable;
-import java.util.Date;
+
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,14 +21,13 @@ public class PolicyHistory implements Serializable {
     @Column(name = "CLM_STATUS")
     String claimHistory;
     @Column(name = "CLM_SUBMIT_DATE")
-    Date clmSubmitDate;
+    String clmSubmitDate;
     @Column(name = "CLM_OCCUR_DATE")
-    Date clmOccurDate;
+    String clmOccurDate;
 
     public PolicyHistory() {
 
     }
-
 
     public Integer getTranno() {
         return this.tranno;
@@ -62,21 +61,20 @@ public class PolicyHistory implements Serializable {
         this.claimHistory = claimHistory;
     }
 
-    public Date getClmSubmitDate() {
+    public String getClmSubmitDate() {
         return this.clmSubmitDate;
     }
 
-    public void setClmSubmitDate(Date clmSubmitDate) {
+    public void setClmSubmitDate(String clmSubmitDate) {
         this.clmSubmitDate = clmSubmitDate;
     }
 
-    public Date getClmOccurDate() {
+    public String getClmOccurDate() {
         return this.clmOccurDate;
     }
 
-    public void setClmOccurDate(Date clmOccurDate) {
+    public void setClmOccurDate(String clmOccurDate) {
         this.clmOccurDate = clmOccurDate;
     }
- 
 
 }

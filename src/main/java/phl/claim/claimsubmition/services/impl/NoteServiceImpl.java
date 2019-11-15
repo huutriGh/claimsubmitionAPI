@@ -24,7 +24,7 @@ public class NoteServiceImpl implements NoteService {
                 try (Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession()) {
 
                         StringBuilder sql = new StringBuilder();
-                        sql.append("select N.NoteID as Note_ID,T.NoteDetailId as Note_Detail_Id , N.NoteHeader as Note_Header, T.NoteDetailDesc as Note_Detail_Desc \n");
+                        sql.append("select N.NoteID as Note_ID,N.NoteOrder as Note_Order, T.NoteDetailId as Note_Detail_Id , N.NoteHeader as Note_Header, T.NoteDetailDesc as Note_Detail_Desc \n");
                         sql.append("from Notes N left join NoteDetails T on N.NoteID = T.NodeId \n ");
                         sql.append("order by N.NoteOrder, T.NodeDetailOrder \n");
 

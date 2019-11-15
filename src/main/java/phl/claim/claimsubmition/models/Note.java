@@ -22,6 +22,9 @@ public class Note implements Serializable {
     @Column(name = "Note_Detail_Desc")
     String noteDetailDesc;
 
+    @Column(name = "Note_Order")
+    Integer noteOrder;
+
     public Note() {
     }
 
@@ -55,6 +58,14 @@ public class Note implements Serializable {
 
     public void setNoteDetailDesc(String noteDetailDesc) {
         this.noteDetailDesc = noteDetailDesc;
+    }
+
+    public Integer getNoteOrder() {
+        return this.noteOrder;
+    }
+
+    public void setNoteOrder(Integer noteOrder) {
+        this.noteOrder = noteOrder;
     }
 
 }

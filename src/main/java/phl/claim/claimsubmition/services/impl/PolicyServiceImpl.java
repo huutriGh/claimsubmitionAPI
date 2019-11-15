@@ -66,7 +66,7 @@ public class PolicyServiceImpl implements PolicyService {
                         sql.append("REINS_DATE, FLUP_CODES, PAID_TO_DATE, POLICY_STATUS, LOAN_STATUS,\n ");
                         sql.append("LA_NAME, LA_IDNUMBER, LA_CLIENT_NUMBER, LA_DOB, LA_SEX, AGENT_CHANNEL, AGENT_NUMBER, \n");
                         sql.append("AGENT_NAME, SALES_UNIT, AREA_NAME, BENEF_NAME, BENEF_IDNUM, BENEF_IDDATE, BENEF_ADDRESS \n");
-                        sql.append("FROM policy_info where POLICY_NUMBER =:poNumber and LA_IDNUMBER =:laIdNumber");
+                        sql.append("FROM policy_info where POLICY_NUMBER =:poNumber and PO_IDNUMBER =:laIdNumber");
                         Query<Policy> query = session.createNativeQuery(sql.toString(), Policy.class);
                         query.setParameter("poNumber", poNumber);
                         query.setParameter("laIdNumber", laIdNumber);
@@ -110,7 +110,7 @@ public class PolicyServiceImpl implements PolicyService {
         public List<PolicyHistory> getPolicyHistory(String poNumber) {
                 try (Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession()) {
                         StringBuilder sql = new StringBuilder();
-                        sql.append("select P.POLICY_NUMBER, P.COMPONENT_NAME,C.CLM_SUBMIT_DATE,C.CLM_OCCUR_DATE, C.CLM_STATUS, C.TRANNO \n");
+                        sql.append("select P.POLICY_NUMBER, P.COMPONENT_NAME,CONVERT(varchar(10), C.CLM_SUBMIT_DATE, 105) as CLM_SUBMIT_DATE, CONVERT(varchar(10), C.CLM_OCCUR_DATE, 105) as CLM_OCCUR_DATE  , C.CLM_STATUS, C.TRANNO \n");
                         sql.append("from claim_info C inner join product_details P on C.Policy_Number = P.POLICY_NUMBER \n");
                         sql.append("and C.Component_Code = p.COMPONENT_CODE \n");
                         sql.append("where P.POLICY_NUMBER =:poNumber \n");
