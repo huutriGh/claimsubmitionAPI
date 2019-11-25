@@ -33,7 +33,7 @@ public class JWTUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Policy policy = policyService.getPolicyByPoNumber(username);
         if (policy != null) {
-            return new User(policy.getPolicyNumber(), bcryptEncoder.encode(policy.getLaIdNumber()), new ArrayList<>());
+            return new User(policy.getPolicyNumber(), bcryptEncoder.encode(policy.getPoIdNumber()), new ArrayList<>());
         } else {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }

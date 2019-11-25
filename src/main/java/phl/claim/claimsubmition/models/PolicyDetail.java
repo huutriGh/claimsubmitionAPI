@@ -112,6 +112,17 @@ public class PolicyDetail implements Serializable {
     @Column(name = "COMPONENT_NAME")
     String componentName;
 
+    @Column(name = "LiFE_NAME")
+    String lifeName;
+
+    public String getLifeName() {
+        return this.lifeName;
+    }
+
+    public void setLifeName(String lifeName) {
+        this.lifeName = lifeName;
+    }
+
     public PolicyDetail() {
     }
 

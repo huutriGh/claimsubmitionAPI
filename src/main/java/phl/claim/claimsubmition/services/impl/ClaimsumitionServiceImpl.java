@@ -36,13 +36,14 @@ public class ClaimsumitionServiceImpl implements ClaimsumitionService {
                         sql.append(" HOSPITALIZED_DATE_OUT, DIAGONOSTIC, HOSPITAL, DOCTOR, HOSPITAL_HEALTHINS, EVENT_DISCRIPTION, \n");
                         sql.append(" PAYMENT_MOTHOD, ACCOUNT_NAME, ACCOUNT_IDCARD_DATE, ACCOUNT_IDCARD, ACCOUNT_NUMBER, \n");
                         sql.append(" ACCOUNT_HOLDER, ORTHER_INSURANCE, ISR1_NAME, ISR1_EFF_DATE, ISR1_AMOUNT, ISR2_NAME, \n");
-                        sql.append(" ISR2_EFF_DATE, ISR2_AMOUNT, DATE_SUBMIT, DATE_UPDATE, DATE_DELETE \n");
+                        sql.append(" ISR2_EFF_DATE, ISR2_AMOUNT, DATE_SUBMIT, DATE_UPDATE, DATE_DELETE, BANK, STATUS \n");
                         sql.append(" FROM            Claim_Submition \n");
-                        sql.append(" WHERE PO_NUMBER =:poNumber \n");
-                        sql.append(" and LA_IDNUMBER =:laIdNumber and DATE_DELETE is null ");
+                        sql.append(" WHERE PO_NUMBER =:poNumber and DATE_DELETE is null \n");
+                        sql.append(" Order By DATE_SUBMIT DESC \n");
+                        // sql.append(" and LA_IDNUMBER =:laIdNumber and DATE_DELETE is null ");
                         Query<ClaimSubmition> query = session.createNativeQuery(sql.toString(), ClaimSubmition.class);
                         query.setParameter("poNumber", poNumber);
-                        query.setParameter("laIdNumber", laIdNumber);
+                        // query.setParameter("laIdNumber", laIdNumber);
 
                         List<ClaimSubmition> rows = query.getResultList();
                         return rows;
@@ -63,7 +64,7 @@ public class ClaimsumitionServiceImpl implements ClaimsumitionService {
                         sql.append(" HOSPITALIZED_DATE_OUT, DIAGONOSTIC, HOSPITAL, DOCTOR, HOSPITAL_HEALTHINS, EVENT_DISCRIPTION, \n");
                         sql.append(" PAYMENT_MOTHOD, ACCOUNT_NAME, ACCOUNT_IDCARD_DATE, ACCOUNT_IDCARD, ACCOUNT_NUMBER, \n");
                         sql.append(" ACCOUNT_HOLDER, ORTHER_INSURANCE, ISR1_NAME, ISR1_EFF_DATE, ISR1_AMOUNT, ISR2_NAME, \n");
-                        sql.append(" ISR2_EFF_DATE, ISR2_AMOUNT, DATE_SUBMIT, DATE_UPDATE, DATE_DELETE \n");
+                        sql.append(" ISR2_EFF_DATE, ISR2_AMOUNT,  DATE_SUBMIT, DATE_UPDATE, DATE_DELETE,BANK, STATUS \n");
                         sql.append(" FROM            Claim_Submition \n");
                         sql.append(" WHERE ID =:id and \n");
                         sql.append(" DATE_DELETE is null ");

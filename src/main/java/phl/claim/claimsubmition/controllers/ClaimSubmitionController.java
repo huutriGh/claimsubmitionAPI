@@ -34,7 +34,7 @@ public class ClaimSubmitionController {
             @PathVariable("laIdNumber") String laIdNumber) {
 
         List<ClaimSubmition> claimSubmition = claimsumitionService.findAll(poNumber, laIdNumber);
-        if ( claimSubmition == null || claimSubmition.isEmpty()) {
+        if (claimSubmition == null || claimSubmition.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(claimSubmition, HttpStatus.OK);
@@ -54,6 +54,17 @@ public class ClaimSubmitionController {
     @RequestMapping(value = "/claimsumitions", method = RequestMethod.POST)
     public ResponseEntity<ClaimSubmition> createProuct(@RequestBody ClaimSubmition claimSubmition,
             UriComponentsBuilder builder) {
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        Date date = new Date();
+        String a = formatter.format(date);
+        try {
+            claimSubmition.setDateSubmit(formatter.parse(a));
+        } catch (ParseException e) {
+
+            e.printStackTrace();
+        }
         claimsumitionService.save(claimSubmition);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(builder.path("/products/{id}").buildAndExpand(claimSubmition.getId()).toUri());

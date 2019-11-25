@@ -100,14 +100,31 @@ public class ClaimSubmition implements Serializable {
     String isr2Amount;
 
     @Column(name = "DATE_SUBMIT")
-    Date dateSummit;
+    Date dateSubmit;
     @Column(name = "DATE_UPDATE")
     Date dateUpdate;
     @Column(name = "DATE_DELETE")
     Date dateDelete;
+    @Column(name = "BANK")
+    String bank;
+    @Column(name = "STATUS")
+    String status;
 
+    public String getBank() {
+        return this.bank;
+    }
 
-  
+    public void setBank(String bank) {
+        this.bank = bank;
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public Integer getId() {
         return this.id;
@@ -381,12 +398,12 @@ public class ClaimSubmition implements Serializable {
         this.isr2Amount = isr2Amount;
     }
 
-    public Date getDateSummit() {
-        return this.dateSummit;
+    public Date getDateSubmit() {
+        return this.dateSubmit;
     }
 
-    public void setDateSummit(Date dateSummit) {
-        this.dateSummit = dateSummit;
+    public void setDateSubmit(Date dateSummit) {
+        this.dateSubmit = dateSummit;
     }
 
     public Date getDateUpdate() {
@@ -446,17 +463,18 @@ public class ClaimSubmition implements Serializable {
                 && Objects.equals(isr2Name, claimSubmition.isr2Name)
                 && Objects.equals(isr2EffDate, claimSubmition.isr2EffDate)
                 && Objects.equals(isr2Amount, claimSubmition.isr2Amount)
-                && Objects.equals(dateSummit, claimSubmition.dateSummit)
+                && Objects.equals(dateSubmit, claimSubmition.dateSubmit)
                 && Objects.equals(dateUpdate, claimSubmition.dateUpdate)
                 && Objects.equals(dateDelete, claimSubmition.dateDelete);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, poNumber, laName, laIdNumber, laAddress, laPhone, rqName, rqIdNumber, rqAddress, rqPhone, eventDate, eventPlace, eventReason, benifitType, dateIn, dateOut, diagonostic, hospital, doctor, hospitalHealthIns, eventDiscription, paymentMothod, accountName, accountIdCardDate, accountIdCard, accountNumber, accountHolder, ortherInsurance, isr1Name, isr1EffDate, isr1Amount, isr2Name, isr2EffDate, isr2Amount, dateSummit, dateUpdate, dateDelete);
+        return Objects.hash(id, poNumber, laName, laIdNumber, laAddress, laPhone, rqName, rqIdNumber, rqAddress,
+                rqPhone, eventDate, eventPlace, eventReason, benifitType, dateIn, dateOut, diagonostic, hospital,
+                doctor, hospitalHealthIns, eventDiscription, paymentMothod, accountName, accountIdCardDate,
+                accountIdCard, accountNumber, accountHolder, ortherInsurance, isr1Name, isr1EffDate, isr1Amount,
+                isr2Name, isr2EffDate, isr2Amount, dateSubmit, dateUpdate, dateDelete);
     }
-
-
-
 
 }

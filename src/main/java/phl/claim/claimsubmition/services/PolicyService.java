@@ -8,9 +8,9 @@ import phl.claim.claimsubmition.models.PolicyHistory;
 
 public interface PolicyService {
 
-    List<PolicyDetail> getPolicyDetail(String poNumber, String laIdNumber);
+    List<PolicyDetail> getPolicyDetail(String poNumber, String poIdNumber);
 
-    Policy getPolicy(String poNumber, String laIdNumber);
+    Policy getPolicy(String poNumber, String poIdNumber);
 
     Policy getPolicyByPoNumber(String poNumber);
 
