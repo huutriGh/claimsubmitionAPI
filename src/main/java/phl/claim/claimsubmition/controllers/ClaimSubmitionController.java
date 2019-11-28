@@ -1,11 +1,20 @@
 package phl.claim.claimsubmition.controllers;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,7 +23,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import phl.claim.claimsubmition.models.ClaimSubmition;
@@ -146,5 +158,53 @@ public class ClaimSubmitionController {
         }
         claimsumitionService.save(claimSubmition);
         return new ResponseEntity<>(claimSubmition, HttpStatus.NO_CONTENT);
+    }
+
+    public ResponseEntity<String> uploadToLocalFileSystem(@RequestParam("file") MultipartFile file, String claimId,
+            String typeImage) {
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+
+        Date date = new Date();
+        String a = formatter.format(date);
+
+        Path dirPathObj = Paths.get("Images" + "\\" + a + "\\" + claimId + "\\" + typeImage + "\\");
+        boolean dirExists = Files.exists(dirPathObj);
+        if (dirExists) {
+            System.out.println("! Directory Already Exists !");
+        } else {
+            try {
+                // Creating The New Directory Structure
+                Files.createDirectories(dirPathObj);
+                System.out.println("! New Directory Successfully Created !");
+            } catch (IOException ioExceptionObj) {
+                System.out.println(
+                        "Problem Occured While Creating The Directory Structure= " + ioExceptionObj.getMessage());
+            }
+        }
+
+        Path path = Paths.get(dirPathObj + "\\" + fileName);
+        try {
+            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/download/")
+                .path(fileName).toUriString();
+        return ResponseEntity.ok(fileDownloadUri);
+    }
+
+    @RequestMapping(value = "/uploadImage", method = RequestMethod.POST)
+    public ResponseEntity<List<Object>> uploadImage(@RequestParam("files") MultipartFile[] files,
+            @RequestParam("claimId") String claimId, @RequestParam("typeImage") String typeImage) {
+        List<Object> fileDownloadUrls = new ArrayList<>();
+        for (MultipartFile file : files) {
+            fileDownloadUrls.add(uploadToLocalFileSystem(file, claimId, typeImage).getBody());
+        }
+        // Arrays.asList(files).stream()
+        // .forEach(file -> fileDownloadUrls.add(uploadToLocalFileSystem(file, claimId,
+        // typeImage).getBody()));
+        return ResponseEntity.ok(fileDownloadUrls);
     }
 }
