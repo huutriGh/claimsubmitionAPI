@@ -164,20 +164,18 @@ public class ClaimSubmitionController {
     }
 
     @Value("${app.fileBasePath}")
-    String testPath;
+    String imagePath;
 
     public ResponseEntity<ImagePath> uploadToLocalFileSystem(@RequestParam("file") MultipartFile file, String claimId,
             String typeImage) {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-
-        System.out.println(testPath);
 
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 
         Date date = new Date();
         String a = formatter.format(date);
 
-        Path dirPathObj = Paths.get("Images" + "\\" + a + "\\" + claimId + "\\" + typeImage + "\\");
+        Path dirPathObj = Paths.get(imagePath + a + "\\" + claimId + "\\" + typeImage + "\\");
         boolean dirExists = Files.exists(dirPathObj);
         if (dirExists) {
             System.out.println("! Directory Already Exists !");
