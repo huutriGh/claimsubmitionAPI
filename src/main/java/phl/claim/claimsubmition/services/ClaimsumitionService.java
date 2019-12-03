@@ -13,4 +13,6 @@ public interface ClaimsumitionService {
     void save(ClaimSubmition claim);
 
     void remove(ClaimSubmition claim);
+
+    Integer updateImagePath(Integer id, String path);
 }

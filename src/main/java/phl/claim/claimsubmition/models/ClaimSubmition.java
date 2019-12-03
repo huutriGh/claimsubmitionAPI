@@ -109,6 +109,8 @@ public class ClaimSubmition implements Serializable {
     String bank;
     @Column(name = "STATUS")
     String status;
+    @Column(name = "IMAGE_PATH")
+    String imagePath;
 
     public String getBank() {
         return this.bank;
@@ -423,6 +425,14 @@ public class ClaimSubmition implements Serializable {
     }
 
     public ClaimSubmition() {
+    }
+
+    public String getImagePath() {
+        return this.imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package phl.claim.claimsubmition.controllers;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,17 +9,19 @@ import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.StringUtils;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,10 +29,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import phl.claim.claimsubmition.models.ClaimSubmition;
+import phl.claim.claimsubmition.models.ImagePath;
 import phl.claim.claimsubmition.services.ClaimsumitionService;
 
 @RestController
@@ -160,9 +163,14 @@ public class ClaimSubmitionController {
         return new ResponseEntity<>(claimSubmition, HttpStatus.NO_CONTENT);
     }
 
-    public ResponseEntity<String> uploadToLocalFileSystem(@RequestParam("file") MultipartFile file, String claimId,
+    @Value("${app.fileBasePath}")
+    String testPath;
+
+    public ResponseEntity<ImagePath> uploadToLocalFileSystem(@RequestParam("file") MultipartFile file, String claimId,
             String typeImage) {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
+        System.out.println(testPath);
 
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 
@@ -185,20 +193,21 @@ public class ClaimSubmitionController {
         }
 
         Path path = Paths.get(dirPathObj + "\\" + fileName);
+        // System.out.println(path.toString());
         try {
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/download/")
-                .path(fileName).toUriString();
-        return ResponseEntity.ok(fileDownloadUri);
+        // String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+        // .path(path.toString().replace('\\', '/')).toUriString();
+        return ResponseEntity.ok(new ImagePath(path.toString().replace("\\\\", "\\"), typeImage));
     }
 
     @RequestMapping(value = "/uploadImage", method = RequestMethod.POST)
-    public ResponseEntity<List<Object>> uploadImage(@RequestParam("files") MultipartFile[] files,
+    public ResponseEntity<HashSet<ImagePath>> uploadImage(@RequestParam("files") MultipartFile[] files,
             @RequestParam("claimId") String claimId, @RequestParam("typeImage") String typeImage) {
-        List<Object> fileDownloadUrls = new ArrayList<>();
+        HashSet<ImagePath> fileDownloadUrls = new HashSet<>();
         for (MultipartFile file : files) {
             fileDownloadUrls.add(uploadToLocalFileSystem(file, claimId, typeImage).getBody());
         }
@@ -206,5 +215,30 @@ public class ClaimSubmitionController {
         // .forEach(file -> fileDownloadUrls.add(uploadToLocalFileSystem(file, claimId,
         // typeImage).getBody()));
         return ResponseEntity.ok(fileDownloadUrls);
+    }
+
+    @RequestMapping(value = "/Images/{folder}/{date}/{claimId}/{typeId}/{fileName}", method = RequestMethod.GET)
+    public ResponseEntity<Resource> getImage(@PathVariable("folder") String folder, @PathVariable("date") String date,
+            @PathVariable("claimId") String claimId, @PathVariable("typeId") String typeId,
+            @PathVariable("fileName") String fileName) {
+        Path path = Paths.get(folder + "\\" + date + "\\" + claimId + "\\" + typeId + "\\" + fileName);
+        Resource resource = null;
+        try {
+            resource = new UrlResource(path.toUri());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(MediaType.IMAGE_JPEG_VALUE))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
+    @RequestMapping(value = "/ImagePath/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<Integer> updateImagePath(@PathVariable("id") Integer id, @RequestBody ImagePath imagePath) {
+        if (claimsumitionService.updateImagePath(id, imagePath.getPath()) > 0) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return ResponseEntity.ok(0);
+        }
     }
 }

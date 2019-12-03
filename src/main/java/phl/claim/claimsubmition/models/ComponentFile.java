@@ -26,7 +26,7 @@ public class ComponentFile implements Serializable {
     @Column(name = "Component_File_ID")
     String componentFileID;
 
-    @Column(name = "Component_Filename")
+    @Column(name = "Component_File_Name")
     String componentFilename;
 
     @Column(name = "Accident")

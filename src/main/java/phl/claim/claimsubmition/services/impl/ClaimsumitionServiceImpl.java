@@ -6,6 +6,7 @@ import javax.persistence.EntityManagerFactory;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,8 +37,8 @@ public class ClaimsumitionServiceImpl implements ClaimsumitionService {
                         sql.append(" HOSPITALIZED_DATE_OUT, DIAGONOSTIC, HOSPITAL, DOCTOR, HOSPITAL_HEALTHINS, EVENT_DISCRIPTION, \n");
                         sql.append(" PAYMENT_MOTHOD, ACCOUNT_NAME, ACCOUNT_IDCARD_DATE, ACCOUNT_IDCARD, ACCOUNT_NUMBER, \n");
                         sql.append(" ACCOUNT_HOLDER, ORTHER_INSURANCE, ISR1_NAME, ISR1_EFF_DATE, ISR1_AMOUNT, ISR2_NAME, \n");
-                        sql.append(" ISR2_EFF_DATE, ISR2_AMOUNT, DATE_SUBMIT, DATE_UPDATE, DATE_DELETE, BANK, STATUS \n");
-                        sql.append(" FROM            Claim_Submition \n");
+                        sql.append(" ISR2_EFF_DATE, ISR2_AMOUNT, DATE_SUBMIT, DATE_UPDATE, DATE_DELETE, BANK, STATUS,IMAGE_PATH \n");
+                        sql.append(" FROM            R_Claim_Submition \n");
                         sql.append(" WHERE PO_NUMBER =:poNumber and DATE_DELETE is null \n");
                         sql.append(" Order By DATE_SUBMIT DESC \n");
                         // sql.append(" and LA_IDNUMBER =:laIdNumber and DATE_DELETE is null ");
@@ -64,8 +65,8 @@ public class ClaimsumitionServiceImpl implements ClaimsumitionService {
                         sql.append(" HOSPITALIZED_DATE_OUT, DIAGONOSTIC, HOSPITAL, DOCTOR, HOSPITAL_HEALTHINS, EVENT_DISCRIPTION, \n");
                         sql.append(" PAYMENT_MOTHOD, ACCOUNT_NAME, ACCOUNT_IDCARD_DATE, ACCOUNT_IDCARD, ACCOUNT_NUMBER, \n");
                         sql.append(" ACCOUNT_HOLDER, ORTHER_INSURANCE, ISR1_NAME, ISR1_EFF_DATE, ISR1_AMOUNT, ISR2_NAME, \n");
-                        sql.append(" ISR2_EFF_DATE, ISR2_AMOUNT,  DATE_SUBMIT, DATE_UPDATE, DATE_DELETE,BANK, STATUS \n");
-                        sql.append(" FROM            Claim_Submition \n");
+                        sql.append(" ISR2_EFF_DATE, ISR2_AMOUNT,  DATE_SUBMIT, DATE_UPDATE, DATE_DELETE,BANK, STATUS,IMAGE_PATH \n");
+                        sql.append(" FROM            R_Claim_Submition \n");
                         sql.append(" WHERE ID =:id and \n");
                         sql.append(" DATE_DELETE is null ");
                         Query<ClaimSubmition> query = session.createNativeQuery(sql.toString(), ClaimSubmition.class);
@@ -91,6 +92,26 @@ public class ClaimsumitionServiceImpl implements ClaimsumitionService {
         public void remove(ClaimSubmition claim) {
                 claimSubmitionRespository.delete(claim);
 
+        }
+
+        @Override
+        public Integer updateImagePath(Integer id, String path) {
+                try (Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession()) {
+                        Transaction txn = session.beginTransaction();
+                        StringBuilder sql = new StringBuilder();
+                        sql.append("Update R_Claim_Submition set IMAGE_PATH =:path\n");
+                        sql.append(" WHERE ID =:id \n");
+                        Query query = session.createNativeQuery(sql.toString());
+                        query.setParameter("path", path);
+                        query.setParameter("id", id);
+                        query.executeUpdate();
+                        txn.commit();
+                        return 1;
+
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        return 0;
+                }
         }
 
 }
