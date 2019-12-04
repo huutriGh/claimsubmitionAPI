@@ -1,6 +1,7 @@
 package phl.claim.claimsubmition.models;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -122,6 +123,31 @@ public class ComponentFile implements Serializable {
 
     public void setFatalDisease(String fatalDisease) {
         this.fatalDisease = fatalDisease;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof ComponentFile)) {
+            return false;
+        }
+        ComponentFile componentFile = (ComponentFile) o;
+        return Objects.equals(id, componentFile.id) && Objects.equals(componentCode, componentFile.componentCode)
+                && Objects.equals(componentName, componentFile.componentName)
+                && Objects.equals(colNum, componentFile.colNum)
+                && Objects.equals(componentFileID, componentFile.componentFileID)
+                && Objects.equals(componentFilename, componentFile.componentFilename)
+                && Objects.equals(accident, componentFile.accident)
+                && Objects.equals(pathological, componentFile.pathological)
+                && Objects.equals(missing, componentFile.missing)
+                && Objects.equals(fatalDisease, componentFile.fatalDisease);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, componentCode, componentName, colNum, componentFileID, componentFilename, accident,
+                pathological, missing, fatalDisease);
     }
 
 }

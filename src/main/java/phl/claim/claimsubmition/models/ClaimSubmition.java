@@ -12,7 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Claim_Submition")
+@Table(name = "R_Claim_Submition")
 public class ClaimSubmition implements Serializable {
     private static final long serialVersionUID = 1L;
 

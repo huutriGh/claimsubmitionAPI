@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import phl.claim.claimsubmition.models.PaymentMethod;
 import phl.claim.claimsubmition.models.PolicyDetail;
 import phl.claim.claimsubmition.models.PolicyHistory;
 import phl.claim.claimsubmition.services.PolicyService;
@@ -48,6 +49,23 @@ public class PolicyController {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
             return new ResponseEntity<>(policyHistory, HttpStatus.OK);
+
+        } catch (
+
+        Exception e) {
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+
+    }
+
+    @RequestMapping(value = "/paymentMethod", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<PaymentMethod>> getPaymentMethod() {
+        try {
+            List<PaymentMethod> paymentMethod = policyService.getPaymentMethod();
+            if (paymentMethod == null) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(paymentMethod, HttpStatus.OK);
 
         } catch (
 

@@ -10,6 +10,7 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import phl.claim.claimsubmition.models.PaymentMethod;
 import phl.claim.claimsubmition.models.Policy;
 import phl.claim.claimsubmition.models.PolicyDetail;
 import phl.claim.claimsubmition.models.PolicyHistory;
@@ -120,6 +121,21 @@ public class PolicyServiceImpl implements PolicyService {
                         Query<PolicyHistory> query = session.createNativeQuery(sql.toString(), PolicyHistory.class);
                         query.setParameter("poNumber", poNumber);
                         List<PolicyHistory> rows = query.getResultList();
+                        return rows;
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
+                return null;
+        }
+
+        @Override
+        public List<PaymentMethod> getPaymentMethod() {
+                try (Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession()) {
+                        StringBuilder sql = new StringBuilder();
+                        sql.append("SELECT [ID],[DESCRIPTION] ,cast(0 as bit) Checked FROM payment_method\n");
+                        Query<PaymentMethod> query = session.createNativeQuery(sql.toString(), PaymentMethod.class);
+                       
+                        List<PaymentMethod> rows = query.getResultList();
                         return rows;
                 } catch (Exception e) {
                         e.printStackTrace();

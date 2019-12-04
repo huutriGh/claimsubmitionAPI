@@ -8,7 +8,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -177,11 +176,8 @@ public class ClaimSubmitionController {
 
         Path dirPathObj = Paths.get(imagePath + a + "\\" + claimId + "\\" + typeImage + "\\");
         boolean dirExists = Files.exists(dirPathObj);
-        if (dirExists) {
-            System.out.println("! Directory Already Exists !");
-        } else {
+        if (!dirExists) {
             try {
-                // Creating The New Directory Structure
                 Files.createDirectories(dirPathObj);
                 System.out.println("! New Directory Successfully Created !");
             } catch (IOException ioExceptionObj) {
@@ -189,16 +185,12 @@ public class ClaimSubmitionController {
                         "Problem Occured While Creating The Directory Structure= " + ioExceptionObj.getMessage());
             }
         }
-
         Path path = Paths.get(dirPathObj + "\\" + fileName);
-        // System.out.println(path.toString());
         try {
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-        // .path(path.toString().replace('\\', '/')).toUriString();
         return ResponseEntity.ok(new ImagePath(path.toString().replace("\\\\", "\\"), typeImage));
     }
 
