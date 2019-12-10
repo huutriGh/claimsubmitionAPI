@@ -1,5 +1,6 @@
 package phl.claim.claimsubmition.controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -162,36 +163,86 @@ public class ClaimSubmitionController {
         return new ResponseEntity<>(claimSubmition, HttpStatus.NO_CONTENT);
     }
 
+    // @Value("${app.fileBasePath}")
+    // String imagePath;
+
+    // public ResponseEntity<ImagePath>
+    // uploadToLocalFileSystem(@RequestParam("file") MultipartFile file, String
+    // claimId,
+    // String typeImage) {
+    // String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
+    // SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+
+    // Date date = new Date();
+    // String a = formatter.format(date);
+
+    // Path dirPathObj = Paths.get(imagePath + a + "\\" + claimId + "\\" + typeImage
+    // + "\\");
+    // boolean dirExists = Files.exists(dirPathObj);
+    // if (!dirExists) {
+    // try {
+    // Files.createDirectories(dirPathObj);
+    // System.out.println("! New Directory Successfully Created !");
+    // } catch (IOException ioExceptionObj) {
+    // System.out.println(
+    // "Problem Occured While Creating The Directory Structure= " +
+    // ioExceptionObj.getMessage());
+    // }
+    // }
+    // Path path = Paths.get(dirPathObj + "\\" + fileName);
+    // try {
+    // Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+    // } catch (IOException e) {
+    // e.printStackTrace();
+    // }
+    // return ResponseEntity.ok(new ImagePath(path.toString().replace("\\\\", "\\"),
+    // typeImage));
+    // }
     @Value("${app.fileBasePath}")
     String imagePath;
 
     public ResponseEntity<ImagePath> uploadToLocalFileSystem(@RequestParam("file") MultipartFile file, String claimId,
             String typeImage) {
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        try {
+            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 
-        Date date = new Date();
-        String a = formatter.format(date);
+            Date newdate = new Date();
+            String date = formatter.format(newdate);
 
-        Path dirPathObj = Paths.get(imagePath + a + "\\" + claimId + "\\" + typeImage + "\\");
-        boolean dirExists = Files.exists(dirPathObj);
-        if (!dirExists) {
+            Path dirPathObj = Paths.get(imagePath.replace('/', File.separatorChar) + date + File.separatorChar + claimId
+                    + File.separatorChar + typeImage);
+
             try {
-                Files.createDirectories(dirPathObj);
-                System.out.println("! New Directory Successfully Created !");
-            } catch (IOException ioExceptionObj) {
+                File dir = new File(dirPathObj.toString());
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                    System.out.println("! New Directory Successfully Created !");
+                }
+
+            } catch (Exception ioExceptionObj) {
                 System.out.println(
                         "Problem Occured While Creating The Directory Structure= " + ioExceptionObj.getMessage());
+                return ResponseEntity.ok(new ImagePath(ioExceptionObj.toString(), typeImage));
             }
+
+            Path path = Paths.get(dirPathObj + (File.separatorChar + fileName));
+            try {
+                Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return ResponseEntity.ok(new ImagePath(e.toString(), typeImage));
+            }
+            // return ResponseEntity.ok(new ImagePath(path.toString().replace("\\\\", "\\"),
+            // typeImage));
+            return ResponseEntity.ok(new ImagePath(date + File.separatorChar + claimId + File.separatorChar + typeImage
+                    + File.separatorChar + fileName, typeImage));
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ImagePath(e.toString(), typeImage));
         }
-        Path path = Paths.get(dirPathObj + "\\" + fileName);
-        try {
-            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return ResponseEntity.ok(new ImagePath(path.toString().replace("\\\\", "\\"), typeImage));
+
     }
 
     @RequestMapping(value = "/uploadImage", method = RequestMethod.POST)
@@ -207,11 +258,11 @@ public class ClaimSubmitionController {
         return ResponseEntity.ok(fileDownloadUrls);
     }
 
-    @RequestMapping(value = "/Images/{folder}/{date}/{claimId}/{typeId}/{fileName}", method = RequestMethod.GET)
-    public ResponseEntity<Resource> getImage(@PathVariable("folder") String folder, @PathVariable("date") String date,
-            @PathVariable("claimId") String claimId, @PathVariable("typeId") String typeId,
-            @PathVariable("fileName") String fileName) {
-        Path path = Paths.get(folder + "\\" + date + "\\" + claimId + "\\" + typeId + "\\" + fileName);
+    @RequestMapping(value = "/Images/{date}/{claimId}/{typeId}/{fileName}", method = RequestMethod.GET)
+    public ResponseEntity<Resource> getImage(@PathVariable("date") String date, @PathVariable("claimId") String claimId,
+            @PathVariable("typeId") String typeId, @PathVariable("fileName") String fileName) {
+        Path path = Paths.get(imagePath.replace('/', File.separatorChar) + date + File.separatorChar + claimId
+                + File.separatorChar + typeId + File.separatorChar + fileName);
         Resource resource = null;
         try {
             resource = new UrlResource(path.toUri());
@@ -222,6 +273,28 @@ public class ClaimSubmitionController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
+    // @RequestMapping(value =
+    // "/Images/{folder}/{date}/{claimId}/{typeId}/{fileName}", method =
+    // RequestMethod.GET)
+    // public ResponseEntity<Resource> getImage(@PathVariable("folder") String
+    // folder, @PathVariable("date") String date,
+    // @PathVariable("claimId") String claimId, @PathVariable("typeId") String
+    // typeId,
+    // @PathVariable("fileName") String fileName) {
+    // Path path = Paths.get(folder + "\\" + date + "\\" + claimId + "\\" + typeId +
+    // "\\" + fileName);
+    // Resource resource = null;
+    // try {
+    // resource = new UrlResource(path.toUri());
+    // } catch (MalformedURLException e) {
+    // e.printStackTrace();
+    // }
+    // return
+    // ResponseEntity.ok().contentType(MediaType.parseMediaType(MediaType.IMAGE_JPEG_VALUE))
+    // .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +
+    // resource.getFilename() + "\"")
+    // .body(resource);
+    // }
 
     @RequestMapping(value = "/ImagePath/{id}", method = RequestMethod.PUT)
     public ResponseEntity<Integer> updateImagePath(@PathVariable("id") Integer id, @RequestBody ImagePath imagePath) {
